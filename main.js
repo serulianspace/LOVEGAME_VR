@@ -110,7 +110,7 @@ function update(dt){
   // Girl: EXTREMELY FAST and challenging movement
   state.girl.timer -= dt;
   
-  const minGap = 100; // KEEPS MORE DISTANCE FROM PLAYER
+  const minGap = 130; // KEEPS MORE DISTANCE FROM PLAYER
   const maxGap = 180;
   const minX = Math.max(state.boy.x + minGap, state.width * 0.4);
   const maxX = Math.min(state.boy.x + maxGap, state.width - 60);
@@ -123,11 +123,11 @@ function update(dt){
     state.girl.tx = clamp(state.girl.x + Math.cos(angle) * distance, minX, maxX);
     state.girl.ty = clamp(state.girl.y + Math.sin(angle) * distance, 20, 120);
     
-    state.girl.timer = randRange(0.3, 0.7); // VERY frequent direction changes
+    state.girl.timer = randRange(0.2, 0.5); // VERY frequent direction changes
   }
   
   // EXTREMELY FAST movement
-  const moveSpeed = 0.35; // MUCH FASTER
+  const moveSpeed = 0.55; // MUCH FASTER
   state.girl.x += (state.girl.tx - state.girl.x) * moveSpeed;
   state.girl.y += (state.girl.ty - state.girl.y) * moveSpeed;
 
@@ -423,4 +423,5 @@ function drawShakyString(g, x1,y1, x2,y2, amp=1.5, segs=40){
 function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
 function randInt(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
 function randRange(a,b){ return a + Math.random()*(b-a); }
+
 function drawSprite(img,x,y,w,h){ if(img) ctx.drawImage(img, x|0, y|0, w|0, h|0); }
