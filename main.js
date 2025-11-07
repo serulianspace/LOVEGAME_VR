@@ -147,7 +147,7 @@ function update(dt){
   }
   
   // EXTREMELY FAST movement
-  const moveSpeed = 0.35; // MUCH FASTER
+  const moveSpeed = 0.85; // MUCH FASTER
   state.girl.x += (state.girl.tx - state.girl.x) * moveSpeed;
   state.girl.y += (state.girl.ty - state.girl.y) * moveSpeed;
 
@@ -443,4 +443,5 @@ function randInt(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
 function randRange(a,b){ return a + Math.random()*(b-a); }
 
 function drawSprite(img,x,y,w,h){ if(img) ctx.drawImage(img, x|0, y|0, w|0, h|0); }
+
 
