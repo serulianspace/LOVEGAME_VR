@@ -88,7 +88,6 @@ function loop(ts){
 }
 
 // ===== UPDATE =====
-// ===== UPDATE =====
 function update(dt){
   if(state.phase!=='play') return;
 
@@ -112,10 +111,17 @@ function update(dt){
     // Check for hits and mark them instead of immediately removing
     if(!a.hit && faceHit(a, state.girl)){
       a.hit = true; // Mark as hit but don't remove yet
-      a.hitTimer = 0.1; // Show for 0.1 seconds after hit
+      a.hitTimer = 0.2; // Show for 0.2 seconds after hit (increased from 0.1)
       popHeart();
       state.hits++;
-      if(state.hits >= state.maxHits) winSequence();
+      
+      // Don't immediately win - let the arrow be visible first
+      if(state.hits >= state.maxHits) {
+        // Small delay before win sequence to show the arrow
+        setTimeout(() => {
+          if(state.phase === 'play') winSequence();
+        }, 200);
+      }
     }
     
     // Update hit timer for arrows that hit
@@ -130,28 +136,25 @@ function update(dt){
   // Girl: EXTREMELY FAST and challenging movement
   state.girl.timer -= dt;
   
-  const minGap = 100; // KEEPS MORE DISTANCE FROM PLAYER
+  const minGap = 100;
   const maxGap = 180;
   const minX = Math.max(state.boy.x + minGap, state.width * 0.4);
   const maxX = Math.min(state.boy.x + maxGap, state.width - 60);
 
   if (state.girl.timer <= 0) {
-    // Choose new target position that's away from the boy
-    const angle = Math.random() * Math.PI * 2; // Random direction
-    const distance = randInt(60, 120); // LONGER distance moves
+    const angle = Math.random() * Math.PI * 2;
+    const distance = randInt(60, 120);
     
     state.girl.tx = clamp(state.girl.x + Math.cos(angle) * distance, minX, maxX);
     state.girl.ty = clamp(state.girl.y + Math.sin(angle) * distance, 20, 120);
     
-    state.girl.timer = randRange(0.3, 0.7); // VERY frequent direction changes
+    state.girl.timer = randRange(0.3, 0.7);
   }
   
-  // EXTREMELY FAST movement
-  const moveSpeed = 0.85; // MUCH FASTER
+  const moveSpeed = 0.85;
   state.girl.x += (state.girl.tx - state.girl.x) * moveSpeed;
   state.girl.y += (state.girl.ty - state.girl.y) * moveSpeed;
 
-  // Keep girl in bounds
   state.girl.x = clamp(state.girl.x, state.width * 0.4, state.width - 60);
   state.girl.y = clamp(state.girl.y, 20, state.height - state.girl.h - 10);
 
@@ -173,7 +176,7 @@ function shoot(){
     vy: 0,
     hit: false, // Add hit tracking
     hitTimer: 0 
-  }); // FASTER arrows
+  });
 }
 
 function popHeart(){
@@ -191,8 +194,18 @@ function render(){
     if(state.images.bow){
       drawSprite(state.images.bow, state.boy.x + BOW_OFF.x, state.boy.y + BOW_OFF.y, BOW_OFF.w, BOW_OFF.h);
     }
-    // Draw arrows (only visible when shooting)
-    for(const a of state.arrows) drawSprite(state.images.arrow, a.x, a.y, a.w, a.h);
+    // Draw ALL arrows - including the third hit arrow
+    for(const a of state.arrows) {
+      // Make hit arrows slightly transparent
+      if(a.hit) {
+        ctx.save();
+        ctx.globalAlpha = 0.7;
+        drawSprite(state.images.arrow, a.x, a.y, a.w, a.h);
+        ctx.restore();
+      } else {
+        drawSprite(state.images.arrow, a.x, a.y, a.w, a.h);
+      }
+    }
     
     drawSprite(state.images.rami, state.girl.x, state.girl.y, state.girl.w, state.girl.h);
 
@@ -441,7 +454,4 @@ function drawShakyString(g, x1,y1, x2,y2, amp=1.5, segs=40){
 function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
 function randInt(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
 function randRange(a,b){ return a + Math.random()*(b-a); }
-
 function drawSprite(img,x,y,w,h){ if(img) ctx.drawImage(img, x|0, y|0, w|0, h|0); }
-
-
